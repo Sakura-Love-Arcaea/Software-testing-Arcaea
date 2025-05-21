@@ -28,9 +28,8 @@ public class Record {
     public int calScore() {
         double base = (double) 10000000 / chart.noteCount;
 
-        this.score = (int) 0.0;
+        this.score = (int) (base * pure + base/2 * far);
         return this.score;
-
     }
 
     public double calPotential() {
@@ -40,17 +39,34 @@ public class Record {
             this.potential = constant + 2.0;
         } else if (score >= 9_800_000) {
             this.potential = constant + 1.0 + (score - 9_800_000) / 200_000.0;
-        } else if (score >= 9_500_000) {
-            this.potential = Math.max(0, constant + (score - 9_500_000) / 300_000.0);
         } else {
-            this.potential = 0.0;
+            this.potential = Math.max(0, constant + (score - 9_500_000) / 300_000.0);
         }
 
         return this.potential;
     }
 
     public String calRank() {
-        this.rank = "EX+";
+        if (this.lost == 0 && this.score < 10_000_000) {
+            this.rank = "FC";
+        } else if (this.score >= 10_000_000) {
+            this.rank = "PM";
+        } else if (this.score >=  9_900_000) {
+            this.rank = "EX+";
+        } else if (this.score >=  9_800_000) {
+            this.rank = "EX";
+        } else if (this.score >=  9_500_000) {
+            this.rank = "AA";
+        } else if (this.score >=  9_200_000) {
+            this.rank = "A";
+        } else if (this.score >=  8_900_000) {
+            this.rank = "B";
+        } else if (this.score >=  8_600_000) {
+            this.rank = "C";
+        } else {
+            this.rank = "F";
+        }
+
         return this.rank;
     }
 
