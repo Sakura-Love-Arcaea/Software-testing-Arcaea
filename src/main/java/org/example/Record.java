@@ -12,7 +12,7 @@ public class Record {
 //    TODO
 //    private int maxPure;
 
-    public Record(Chart chart, int pure, int far, int lost, boolean isPassed) throws IllegalArgumentException {
+    public Record(Chart chart, int pure, int far, int lost) throws IllegalArgumentException {
         if (pure + far + lost != chart.noteCount) {
             throw new IllegalArgumentException("Score values do not match the note count of the chart.");
         }
@@ -23,7 +23,7 @@ public class Record {
         calScore();
         calPotential();
         calRank();
-        calStatus(isPassed);
+        calStatus();
     }
 
 
@@ -63,18 +63,15 @@ public class Record {
         }
     }
 
-    public void calStatus(boolean isPassed) {
-        if (!isPassed) {
-            this.status = Status.TL;
+    public void calStatus() {
+        if (this.far == 0 && this.lost == 0) {
+            this.status = Status.PM;
+        } else if (this.lost == 0) {
+            this.status = Status.FR;
         } else {
-            if (this.far == 0 && this.lost == 0) {
-                this.status = Status.PM;
-            } else if (this.lost == 0) {
-                this.status = Status.FR;
-            } else {
-                this.status = Status.TC;
-            }
+            this.status = Status.TC;
         }
+
     }
 
     public int getScore() {
@@ -102,7 +99,7 @@ public class Record {
 
     public static void main(String[] args) {
         Chart chart = new Chart("Song A", 100, 1.5f);
-        Record record = new Record(chart, 90, 5, 5, true);
+        Record record = new Record(chart, 90, 5, 5);
         System.out.println(record);
         System.out.println("Score: " + record.getScore());
         System.out.println("Potential: " + record.getPotential());
