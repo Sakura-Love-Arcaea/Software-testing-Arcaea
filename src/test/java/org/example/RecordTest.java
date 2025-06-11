@@ -4,27 +4,77 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RecordTest {
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class RecordTest {
 
     @Test
-    void calScore() {
-        // 物量總數不對（throw)
-        // 分數不對
+    public void testScoreCalculation() {
+        Chart chart = new Chart("Test Song", 100, 1.5f);
+        Record record = new Record(chart, 90, 5, 5); // 90 pure, 5 far, 5 lost
+
+        double base = 10000000.0 / 100;
+        int expectedScore = (int) (base * 90 + base / 2 * 5);
+        assertEquals(expectedScore, record.getScore());
     }
 
     @Test
-    void calPotential() {
+    public void testPotentialOver1000W() {
+        Chart chart = new Chart("Perfect Play", 100, 9.0f);
+        Record record = new Record(chart, 100, 0, 0);
+
+        assertEquals(11.0, record.getPotential()); // 9.0 + 2.0
     }
 
     @Test
-    void getRank() {
+    public void testPotentialBetween980WAnd1000W() {
+        Chart chart = new Chart("Near Perfect", 100, 9.0f);
+        // score = 9900000
+        int pure = 99;
+        int far = 2;
+        int lost = -1; // illegal, but let's calculate correct values first
+        int totalNotes = 100;
+        int calculatedLost = totalNotes - (pure + far); // make lost = 0
+        Record record = new Record(chart, pure, far, calculatedLost);
+
+        double expected = 9.0 + 1.0 + (record.getScore() - 9800000) / 200000.0;
+        assertEquals(expected, record.getPotential(), 0.01);
     }
 
     @Test
-    void testToString() {
+    public void testRank() {
+        Chart chart = new Chart("Rank Test", 100, 8.0f);
+        Record record = new Record(chart, 95, 5, 0); // will score 9750000
+        assertEquals(Rank.AA, record.getRank());
     }
 
     @Test
-    void main() {
+    public void testStatus_PM() {
+        Chart chart = new Chart("Status PM", 100, 7.0f);
+        Record record = new Record(chart, 100, 0, 0);
+        assertEquals(Status.PM, record.getStatus());
+    }
+
+    @Test
+    public void testStatus_FR() {
+        Chart chart = new Chart("Status FR", 100, 7.0f);
+        Record record = new Record(chart, 90, 10, 0);
+        assertEquals(Status.FR, record.getStatus());
+    }
+
+    @Test
+    public void testStatus_TC() {
+        Chart chart = new Chart("Status TC", 100, 7.0f);
+        Record record = new Record(chart, 80, 10, 10);
+        assertEquals(Status.TC, record.getStatus());
+    }
+
+    @Test
+    public void testInvalidNoteCountThrowsException() {
+        Chart chart = new Chart("Error Case", 100, 5.0f);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Record(chart, 90, 5, 10); // 90+5+10 = 105 != 100
+        });
     }
 }

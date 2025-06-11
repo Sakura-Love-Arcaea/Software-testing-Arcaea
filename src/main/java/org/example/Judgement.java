@@ -18,11 +18,15 @@ public class Judgement {
         Pure, Far, LateMiss, FastMiss, Ignore
     }
 
-    public Judgement(Chart chart, double[] log) throws IOException {
+    public Judgement(Chart chart, double[] log) {
         this.chart = chart;
         this.log = log;
         Properties timings = new Properties();
-        timings.load(new FileInputStream("src/main/java/org/example/app.properties"));
+        try {
+            timings.load(new FileInputStream("src/main/java/org/example/app.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         fastPure = Double.parseDouble(timings.getProperty("fast-pure-timing"));
         slowPure = Double.parseDouble(timings.getProperty("slow-pure-timing"));
