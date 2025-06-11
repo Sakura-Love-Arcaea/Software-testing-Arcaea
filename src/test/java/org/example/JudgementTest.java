@@ -12,8 +12,8 @@ class JudgementTest {
 
     @Test
     void testA() throws IOException {
-        double[] notes = {      1000, 2000, 3000, 4000, 4000};
-        double[] playlog = {500, 750, 1950, 2900, 4003      }; // i,m,p,f,p,m
+        double[] notes =   {     1000, 2000, 3000, 4000, 4000};
+        double[] playlog = { 500, 750, 1950, 2900, 4003      }; // i,m,p,f,p,m
 
         Chart chart = new Chart("A", 5, 1);
         chart.setNotes(notes);
