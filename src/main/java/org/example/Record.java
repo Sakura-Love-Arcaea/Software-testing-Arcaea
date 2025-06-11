@@ -13,7 +13,7 @@ public class Record {
 //    private int maxPure;
 
     public Record(Chart chart, int pure, int far, int lost) throws IllegalArgumentException {
-        if (pure + far + lost != chart.noteCount) {
+        if (pure + far + lost != chart.getNoteCount()) {
             throw new IllegalArgumentException("Score values do not match the note count of the chart.");
         }
         this.chart = chart;
@@ -28,13 +28,13 @@ public class Record {
 
 
     public void calScore() {
-        double base = (double) 10000000 / chart.noteCount;
+        double base = (double) 10000000 / chart.getNoteCount();
 
         this.score = (int) (base * pure + base/2 * far);
     }
 
     public void calPotential() {
-        double constant = chart.constant;
+        double constant = chart.getConstant();
 
         if (score >= 10_000_000) {
             this.potential = constant + 2.0;

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class JudgementTest {
 
@@ -64,15 +65,22 @@ class JudgementTest {
     @Nested
     @DisplayName("Multi Judgement Test")
     class MultiJudgementsTest {
+        private static LowiroService lowiroService;
+        @BeforeAll
+        static void setup() {
+            lowiroService = mock(LowiroService.class);
+        }
+
         @Test
         void testJudgements() {
-            double[] notes = {1000, 1500, 2000, 2500, 3500, 4000};
+            String songName = "MultiJudgementsTest";
+            when(lowiroService.getNotes(songName)).thenReturn(new double[]{1000, 1500, 2000, 2500, 3500, 4000});
             double[] playlog = {950, 1550, 1800, 2700, 3200, 4500};
 
-            Chart chart = new Chart("MultiJudgementsTest", 6, 1);
-            chart.setNotes(notes);
+            Chart chart = new Chart("MultiJudgementsTest", lowiroService);
 
             Judgement judgement = new Judgement(chart, playlog);
+
             int[] result = judgement.getJudgements();
 
             assertEquals(2, result[0]); // pure
