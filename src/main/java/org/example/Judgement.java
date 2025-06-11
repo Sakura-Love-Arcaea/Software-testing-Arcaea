@@ -14,7 +14,7 @@ public class Judgement {
     private final double slowFar;
     private final double fastMiss;
 
-    private enum Timing {
+    public enum Timing {
         Pure, Far, LateMiss, FastMiss, Ignore
     }
 
@@ -31,7 +31,7 @@ public class Judgement {
         fastMiss = Double.parseDouble(timings.getProperty("fast-miss-timing"));
     }
 
-    private Timing getJudgement(double expected, double actual) {
+    public Timing getJudgement(double expected, double actual) {
         // (xxx - fastMiss - fastFar - fastPure - Just - slowPure - slowFar - xxx)
 
         if (actual < expected - fastMiss) { // ignore when too early (xxx - fastMiss)
@@ -40,9 +40,9 @@ public class Judgement {
             return Timing.FastMiss;
         } else if (actual < expected - fastPure) { // far when too fast (fastFar - fastPure)
             return Timing.Far;
-        } else if (actual < expected + slowPure) { // perfect when in range (fastPure - Just - slowPure)
+        } else if (actual <= expected + slowPure) { // perfect when in range (fastPure - Just - slowPure)
             return Timing.Pure;
-        } else if (actual < expected + slowFar) { // far when too slow (slowPure - slowFar)
+        } else if (actual <= expected + slowFar) { // far when too slow (slowPure - slowFar)
             return Timing.Far;
         } else { // miss when passed judgement window
             return Timing.LateMiss;
