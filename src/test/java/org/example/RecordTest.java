@@ -20,6 +20,16 @@ public class RecordTest {
     }
 
     @Test
+    public void testScoreCalculation2() {
+        Chart chart = new Chart("Test Song", 100, 1.5f);
+        Record record = new Record(chart, 98, 0, 2); // 90 pure, 5 far, 5 lost
+
+        double base = 10000000.0 / 100;
+        int expectedScore = (int) (base * 98 + base / 2 * 0);
+        assertEquals(expectedScore, record.getScore());
+    }
+
+    @Test
     public void testPotentialOver1000W() {
         Chart chart = new Chart("Perfect Play", 100, 9.0f);
         Record record = new Record(chart, 100, 0, 0);
@@ -50,6 +60,20 @@ public class RecordTest {
     }
 
     @Test
+    public void testRank2() {
+        Chart chart = new Chart("Rank Test", 100, 8.0f);
+        Record record = new Record(chart, 90, 0, 10);
+        assertEquals(Rank.B, record.getRank());
+    }
+
+    @Test
+    public void testRank3() {
+        Chart chart = new Chart("Rank Test", 100, 8.0f);
+        Record record = new Record(chart, 87, 0, 13);
+        assertEquals(Rank.C, record.getRank());
+    }
+
+    @Test
     public void testStatus_PM() {
         Chart chart = new Chart("Status PM", 100, 7.0f);
         Record record = new Record(chart, 100, 0, 0);
@@ -76,5 +100,15 @@ public class RecordTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Record(chart, 90, 5, 10); // 90+5+10 = 105 != 100
         });
+    }
+
+    @Test
+    public void testtoString() {
+        Chart chart = new Chart("Rank Test", 100, 8.0f);
+        Record record = new Record(chart, 95, 5, 0); // will score 9750000
+        double potential = record.getPotential();
+        String text = String.format("Record{chart=%s, score=%d, potential=%.2f, pure=%d, far=%d, lost=%d}",
+                chart.songName, 9750000, potential, 95, 5, 0);
+        assertEquals(text, record.toString());
     }
 }

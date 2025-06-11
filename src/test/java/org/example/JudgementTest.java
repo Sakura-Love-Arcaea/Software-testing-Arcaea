@@ -8,15 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JudgementTest {
 
-    // Black box
     @Nested
-    @DisplayName("落在判定範圍中間的")
-    class TimingTests {
+    @DisplayName("Single Judgement Test")
+    class SingleJudgementTest {
         private static Judgement judgement;
 
         @BeforeAll
         static void setup() {
-            judgement = new Judgement(new Chart("Setup", 0, 1), new double[]{}); // blank chart for setup
+            judgement = new Judgement(new Chart("SingleJudgementTest", 0, 1), new double[]{}); // blank chart for setup
         }
 
         @Test
@@ -62,39 +61,23 @@ class JudgementTest {
         }
     }
 
-    // White box
-    @Test
-    void testSingleJudgement() {
-        double[] notes = {};
-        double[] playlog = {};
+    @Nested
+    @DisplayName("Multi Judgement Test")
+    class MultiJudgementsTest {
+        @Test
+        void testJudgements() {
+            double[] notes = {1000, 1500, 2000, 2500, 3500, 4000};
+            double[] playlog = {950, 1550, 1800, 2700, 3200, 4500};
 
-        Chart chart = new Chart("B", 0, 1);
-        chart.setNotes(notes);
+            Chart chart = new Chart("MultiJudgementsTest", 6, 1);
+            chart.setNotes(notes);
 
-        Judgement judgement = new Judgement(chart, playlog);
+            Judgement judgement = new Judgement(chart, playlog);
+            int[] result = judgement.getJudgements();
 
-        assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 950));
-        assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 1050));
-        assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 800));
-        assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 1200));
-        assertEquals(Judgement.Timing.LateMiss, judgement.getJudgement(1000, 1300));
-        assertEquals(Judgement.Timing.FastMiss, judgement.getJudgement(1000, 700));
-        assertEquals(Judgement.Timing.Ignore, judgement.getJudgement(1000, 600));
-    }
-
-    @Test
-    void testMultiJudgements() {
-        double[] notes = {1000, 1500, 2000, 2500, 3500, 4000};
-        double[] playlog = {950, 1550, 1800, 2700, 3200, 4500};
-
-        Chart chart = new Chart("C", 6, 1);
-        chart.setNotes(notes);
-
-        Judgement judgement = new Judgement(chart, playlog);
-        int[] result = judgement.getJudgements();
-
-        assertEquals(2, result[0]); // pure
-        assertEquals(2, result[1]); // far
-        assertEquals(2, result[2]); // miss
+            assertEquals(2, result[0]); // pure
+            assertEquals(2, result[1]); // far
+            assertEquals(2, result[2]); // miss
+        }
     }
 }
