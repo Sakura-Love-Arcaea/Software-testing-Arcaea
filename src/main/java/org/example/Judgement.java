@@ -74,7 +74,7 @@ public class Judgement {
             } else if (timing == Timing.Pure) { // perfect when in range (fastPure - Just - slowPure)
                 pure++;
                 i++; j++;
-            } else if (timing == Timing.LateMiss) { // far when too slow (slowPure - slowFar)
+            } else { // far when too slow (slowPure - slowFar)
                 miss++;
                 i++; // miss current note and hold input to next judgement
             }
