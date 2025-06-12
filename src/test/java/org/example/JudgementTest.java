@@ -139,4 +139,26 @@ class JudgementTest {
 
         }
     }
+
+    @Nested
+    @DisplayName("Multi Nodes Test")
+    class MultiNodesTest {
+
+        @Test
+        void testMultiNodesJudgement() {
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(1); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1100, 2000, 2000, 3000}); // mock notes
+            Chart testChart = new Chart("Test", lowiroService);
+            double[] log = {1030, 1070, 2000, 2060, 2999};
+            Judgement judgement = new Judgement(testChart, log);
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(4, results[0], "Pure count mismatch"),
+                    () -> assertEquals(1, results[1], "Far count mismatch"),
+                    () -> assertEquals(0, results[2], "Miss count mismatch")
+            );
+        }
+    }
 }
