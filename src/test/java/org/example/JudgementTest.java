@@ -26,11 +26,15 @@ class JudgementTest {
         void testIgnore() {
             int offset = -500; // 與expected timing的偏移量，設定為大於 fastMiss的值
             assertEquals(Judgement.Timing.Ignore, judgement.getJudgement(1000, 1000 + offset));
+            offset = -400; // 與expected timing的偏移量，設定為大於 fastMiss的值
+            assertEquals(Judgement.Timing.Ignore, judgement.getJudgement(1000, 1000 + offset));
         }
 
         @Test
         void testFastMiss() {
             int offset = -300; // 與expected timing的偏移量，設定為Ignore < offset < fastMiss
+            assertEquals(Judgement.Timing.FastMiss, judgement.getJudgement(1000, 1000 + offset));
+            offset = -250; // 與expected timing的偏移量，設定為大於 fastMiss的值
             assertEquals(Judgement.Timing.FastMiss, judgement.getJudgement(1000, 1000 + offset));
         }
 
@@ -38,29 +42,39 @@ class JudgementTest {
         void testInFastFarRangeShouldFar() {
             int offset = -200; // 與expected timing的偏移量，設定為fastMiss < offset < fastFar
             assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 1000 + offset));
+            offset = -100; // 與expected timing的偏移量，設定為大於 fastMiss的值
+            assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 1000 + offset));
         }
 
         @Test
         void testInFastPureRangeShouldBePure() {
             int offset = -50; // 與expected timing的偏移量，設定為fastFar < offset < fastPure
             assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 1000 + offset));
+            offset = -1; // 與expected timing的偏移量，設定為大於 fastMiss的值
+            assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 1000 + offset));
         }
 
         @Test
         void testInSlowPureShouldBePure() {
-            int offset = 50; // 與expected timing的偏移量，設定為fastPure < offset < slowPure
+            int offset = 1; // 與expected timing的偏移量，設定為fastPure < offset < slowPure
+            assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 1000 + offset));
+            offset = 50; // 與expected timing的偏移量，設定為大於 fastMiss的值
             assertEquals(Judgement.Timing.Pure, judgement.getJudgement(1000, 1000 + offset));
         }
 
         @Test
         void testInSlowFarRangeShouldBeFar() {
-            int offset = 200; // 與expected timing的偏移量，設定為slowPure < offset < slowFar
+            int offset = 100; // 與expected timing的偏移量，設定為slowPure < offset < slowFar
+            assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 1000 + offset));
+            offset = 200; // 與expected timing的偏移量，設定為slowPure < offset < slowFar
             assertEquals(Judgement.Timing.Far, judgement.getJudgement(1000, 1000 + offset));
         }
 
         @Test
         void testTooLateShouldBeLateMiss() {
-            int offset = 300; // 與expected timing的偏移量，設定為slowFar < offset
+            int offset = 250; // 與expected timing的偏移量，設定為slowFar < offset
+            assertEquals(Judgement.Timing.LateMiss, judgement.getJudgement(1000, 1000 + offset));
+            offset = 300; // 與expected timing的偏移量，設定為slowPure < offset < slowFar
             assertEquals(Judgement.Timing.LateMiss, judgement.getJudgement(1000, 1000 + offset));
         }
     }
