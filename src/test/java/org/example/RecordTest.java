@@ -74,8 +74,8 @@ public class RecordTest {
     }
 
     @Test
-    public void testRank() {
-        String songName = "Rank Test";
+    public void testRankAA() {
+        String songName = "Rank AA";
         when(lowiroService.getNoteCount(songName)).thenReturn(100);
         when(lowiroService.getConstant(songName)).thenReturn(8.0);
 
@@ -85,8 +85,8 @@ public class RecordTest {
     }
 
     @Test
-    public void testRank2() {
-        String songName = "Rank Test 2";
+    public void testRankB() {
+        String songName = "Rank B";
         when(lowiroService.getNoteCount(songName)).thenReturn(100);
         when(lowiroService.getConstant(songName)).thenReturn(8.0);
 
@@ -96,8 +96,8 @@ public class RecordTest {
     }
 
     @Test
-    public void testRank3() {
-        String songName = "Rank Test 3";
+    public void testRankC() {
+        String songName = "Rank C";
         when(lowiroService.getNoteCount(songName)).thenReturn(100);
         when(lowiroService.getConstant(songName)).thenReturn(8.0);
 
