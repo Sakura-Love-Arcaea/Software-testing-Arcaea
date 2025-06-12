@@ -205,10 +205,54 @@ public class InputCaptureGUI extends JFrame {
         Judgement judgement = new Judgement(chart, inputLog);
         int[] results = judgement.getJudgements();
 
+        // 创建Record对象计算分数、潜力值和状态
+        Record record = new Record(chart, results[0], results[1], results[2]);
+
+        // 创建结算信息面板
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // 添加歌曲信息
+        JLabel songInfoLabel = new JLabel(String.format("歌曲: %s (%.1f)",
+                chart.songName, chart.getConstant()));
+        songInfoLabel.setFont(new Font("Dialog", Font.BOLD, 16));
+        songInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        resultPanel.add(songInfoLabel);
+        resultPanel.add(Box.createVerticalStrut(10));
+
+        // 添加判定结果
+        JLabel judgeLabel = new JLabel(String.format("Jugdement結果: Pure: %d  Far: %d  Lost: %d",
+                results[0], results[1], results[2]));
+        judgeLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+        judgeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        resultPanel.add(judgeLabel);
+        resultPanel.add(Box.createVerticalStrut(10));
+
+        // 添加分数
+        JLabel scoreLabel = new JLabel(String.format("Score: %,d", record.getScore()));
+        scoreLabel.setFont(new Font("Dialog", Font.BOLD, 15));
+        scoreLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        resultPanel.add(scoreLabel);
+        resultPanel.add(Box.createVerticalStrut(5));
+
+        // 添加潜力值
+        JLabel potentialLabel = new JLabel(String.format("Potential: %.2f", record.getPotential()));
+        potentialLabel.setFont(new Font("Dialog", Font.BOLD, 15));
+        potentialLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        resultPanel.add(potentialLabel);
+        resultPanel.add(Box.createVerticalStrut(5));
+
+        // 添加状态
+        JLabel statusLabel = new JLabel(String.format("Status: %s", record.getStatus()));
+        statusLabel.setFont(new Font("Dialog", Font.BOLD, 15));
+        statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        resultPanel.add(statusLabel);
+
+        // 显示对话框
         JOptionPane.showMessageDialog(this,
-                String.format("判定結果：\nPure: %d\nFar: %d\nMiss: %d",
-                        results[0], results[1], results[2]),
-                "判定結果",
+                resultPanel,
+                "演奏结算",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -238,9 +282,31 @@ public class InputCaptureGUI extends JFrame {
 
     public static void main(String[] args) {
         // 示例代碼，實際使用時需要提供真實的Chart對象
+
+        String songName = "Test Song";
         SwingUtilities.invokeLater(() -> {
-            Chart sampleChart = new Chart("Test", 6, 10.0f);
-            sampleChart.setNotes(new double[]{500, 1000, 1500, 2000, 2500, 3000}); // 假設有5個音符
+            LowiroService lowiroService = new LowiroService() {
+                @Override
+                public double[] getNotes(String songName) {
+                    // 假設返回一個示例音符時間數組
+                    return new double[]{500, 1000, 1500, 2000, 2500, 3000};
+                }
+
+                @Override
+                public double getConstant(String songName) {
+                    // 假設返回一個示例常數
+                    return 1.5;
+                }
+
+                @Override
+                public int getNoteCount(String songName) {
+                    // 假設返回一個示例音符數量
+                    return 6;
+                }
+            };
+
+            Chart sampleChart = new Chart(songName, lowiroService);
+            sampleChart.setNotes(lowiroService.getNotes(songName));
             new InputCaptureGUI(sampleChart).setVisible(true);
         });
     }
