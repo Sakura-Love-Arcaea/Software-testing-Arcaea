@@ -9,8 +9,6 @@ public class Record {
     private final int pure;
     private final int far;
     private final int lost;
-//    TODO
-//    private int maxPure;
 
     public Record(Chart chart, int pure, int far, int lost) throws IllegalArgumentException {
         if (pure + far + lost != chart.getNoteCount()) {
@@ -27,12 +25,18 @@ public class Record {
     }
 
 
+    /**
+     * 計算Score，用到pure、far和lost, chart.NoteCount
+     */
     public void calScore() {
         double base = (double) 10000000 / chart.getNoteCount();
 
         this.score = (int) (base * pure + base/2 * far);
     }
 
+    /**
+     * 計算Potential，用到score和chart.Constant
+     */
     public void calPotential() {
         double constant = chart.getConstant();
 
@@ -45,6 +49,9 @@ public class Record {
         }
     }
 
+    /**
+     * 計算Rank（分數階級），用到score
+     */
     public void calRank() {
         if (this.score >=  9_900_000) {
             this.rank = Rank.EX_PLUS;
@@ -63,6 +70,9 @@ public class Record {
         }
     }
 
+    /**
+     * 計算Status(通關類型)，用到far和lost
+     */
     public void calStatus() {
         if (this.far == 0 && this.lost == 0) {
             this.status = Status.PM;

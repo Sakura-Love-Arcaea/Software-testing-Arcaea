@@ -18,6 +18,10 @@ public class Judgement {
         Pure, Far, LateMiss, FastMiss, Ignore
     }
 
+    /**
+     * 建構子
+     * chart應該已經擁有 notes
+     */
     public Judgement(Chart chart, double[] log) {
         this.chart = chart;
         this.log = log;
@@ -35,6 +39,13 @@ public class Judgement {
         fastMiss = Double.parseDouble(timings.getProperty("fast-miss-timing"));
     }
 
+    /**
+     * 內部計算
+     * 根據實際時間與預期時間的差異，返回判定結果
+     * @param expected 預期時間
+     * @param actual 實際時間
+     * @return 判定結果
+     */
     public Timing getJudgement(double expected, double actual) {
         // (xxx - fastMiss - fastFar - fastPure - Just - slowPure - slowFar - xxx)
 
@@ -53,6 +64,11 @@ public class Judgement {
         }
     }
 
+
+    /**
+     * 根據chart.notes和log，比較運算出pure、far和miss的數量
+     * @return 返回一個int[] 包含pure、far和miss
+     */
     public int[] getJudgements() {
         // pure(0), far(1), miss(2)
         int pure, far, miss;

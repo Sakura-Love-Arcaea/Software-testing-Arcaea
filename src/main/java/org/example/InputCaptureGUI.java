@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
+/**
+    * InputCaptureGUI.java
+    * 音符捕捉系統的GUI界面
+    * 用產生點擊時間序列，用於計算判定結果，和其他附加資訊（score、potential、status等）
+ */
 public class InputCaptureGUI extends JFrame {
     private final Chart chart;
     private final List<Double> capturedTimes = new ArrayList<>();
@@ -172,13 +176,6 @@ public class InputCaptureGUI extends JFrame {
         capturedArea.append(String.format("捕捉點 %d: %.2f ms\n",
                 capturedTimes.size(), elapsedTime));
 
-        // 如果捕捉的點數達到或超過音符數量，可以選擇自動結束捕捉
-        // 取消注釋以下代碼來啟用此功能
-        /*
-        if (capturedTimes.size() >= chart.getNotes().length) {
-            stopCapturing();
-        }
-        */
     }
 
     private void resetCapture() {
@@ -205,10 +202,10 @@ public class InputCaptureGUI extends JFrame {
         Judgement judgement = new Judgement(chart, inputLog);
         int[] results = judgement.getJudgements();
 
-        // 创建Record对象计算分数、潜力值和状态
+        // 創建Record對象計算分數、潛力值和狀態
         Record record = new Record(chart, results[0], results[1], results[2]);
 
-        // 创建结算信息面板
+        // 創建結果面板
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -221,7 +218,7 @@ public class InputCaptureGUI extends JFrame {
         resultPanel.add(songInfoLabel);
         resultPanel.add(Box.createVerticalStrut(10));
 
-        // 添加判定结果
+        // 添加判定結果
         JLabel judgeLabel = new JLabel(String.format("Jugdement結果: Pure: %d  Far: %d  Lost: %d",
                 results[0], results[1], results[2]));
         judgeLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -229,21 +226,21 @@ public class InputCaptureGUI extends JFrame {
         resultPanel.add(judgeLabel);
         resultPanel.add(Box.createVerticalStrut(10));
 
-        // 添加分数
+        // 添加score
         JLabel scoreLabel = new JLabel(String.format("Score: %,d", record.getScore()));
         scoreLabel.setFont(new Font("Dialog", Font.BOLD, 15));
         scoreLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         resultPanel.add(scoreLabel);
         resultPanel.add(Box.createVerticalStrut(5));
 
-        // 添加潜力值
+        // 添加potential
         JLabel potentialLabel = new JLabel(String.format("Potential: %.2f", record.getPotential()));
         potentialLabel.setFont(new Font("Dialog", Font.BOLD, 15));
         potentialLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         resultPanel.add(potentialLabel);
         resultPanel.add(Box.createVerticalStrut(5));
 
-        // 添加状态
+        // 添加status
         JLabel statusLabel = new JLabel(String.format("Status: %s", record.getStatus()));
         statusLabel.setFont(new Font("Dialog", Font.BOLD, 15));
         statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

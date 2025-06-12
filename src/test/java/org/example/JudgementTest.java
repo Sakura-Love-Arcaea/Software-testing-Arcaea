@@ -81,37 +81,37 @@ class JudgementTest {
 
         @ParameterizedTest
         @CsvSource({
-                // Ignore区间组合
-                "-301, -550, 0, 0, 1",   // Ignore + Ignore
-                "-301, -350, 0, 0, 1",   // Ignore + FastMiss
-                "-301, -150, 0, 1, 0",   // Ignore + Far(快)
-                "-301, 0,    1, 0, 0",      // Ignore + Pure
-                "-301, 150,  0, 1, 0",    // Ignore + Far(慢)
+                // Ignore heading
+                "-301, -550, 0, 0, 1",    // Ignore + Ignore
+                "-301, -350, 0, 0, 1",    // Ignore + FastMiss
+                "-301, -150, 0, 1, 0",    // Ignore + Far(fast)
+                "-301, 0,    1, 0, 0",    // Ignore + Pure
+                "-301, 150,  0, 1, 0",    // Ignore + Far(slow)
                 "-301, 350,  0, 0, 1",    // Ignore + LateMiss
 
-                // FastMiss区间组合
-                "-201, -320, 0, 0, 1",   // FastMiss + FastMiss
-                "-201, -150, 0, 0, 1",   // FastMiss + Far(快)
-                "-201, 0,    0, 0, 1",      // FastMiss + Pure
-                "-201, 150,  0, 0, 1",    // FastMiss + Far(慢)
+                // FastMiss heading
+                "-201, -320, 0, 0, 1",    // FastMiss + FastMiss
+                "-201, -150, 0, 0, 1",    // FastMiss + Far(fast)
+                "-201, 0,    0, 0, 1",    // FastMiss + Pure
+                "-201, 150,  0, 0, 1",    // FastMiss + Far(slow)
                 "-201, 350,  0, 0, 1",    // FastMiss + LateMiss
 
-                // Far(快)区间组合
-                "-150, -120, 0, 1, 0",   // Far(快) + Far(快)
-                "-150, 0,    0, 1, 0",      // Far(快) + Pure
-                "-150, 150,  0, 1, 0",    // Far(快) + Far(慢)
-                "-150, 350,  0, 1, 0",    // Far(快) + LateMiss
+                // Far(fast) heading
+                "-150, -120, 0, 1, 0",    // Far(fast) + Far(fast)
+                "-150, 0,    0, 1, 0",    // Far(fast) + Pure
+                "-150, 150,  0, 1, 0",    // Far(fast) + Far(slow)
+                "-150, 350,  0, 1, 0",    // Far(fast) + LateMiss
 
-                // Pure区间组合
+                // Pure heading
                 "0, 30,  1, 0, 0",        // Pure + Pure
-                "0, 150, 1, 0, 0",       // Pure + Far(慢)
-                "0, 350, 1, 0, 0",       // Pure + LateMiss
+                "0, 150, 1, 0, 0",        // Pure + Far(slow)
+                "0, 350, 1, 0, 0",        // Pure + LateMiss
 
-                // Far(慢)区间组合
-                "150, 180, 0, 1, 0",     // Far(慢) + Far(慢)
-                "150, 350, 0, 1, 0",     // Far(慢) + LateMiss
+                // Far(slow) heading
+                "150, 180, 0, 1, 0",     // Far(slow) + Far(slow)
+                "150, 350, 0, 1, 0",     // Far(slow) + LateMiss
 
-                // LateMiss区间组合
+                // LateMiss heading
                 "201, 400, 0, 0, 1"      // LateMiss + LateMiss
         })
         void testDoubleHit(double hit1, double hit2, int pure, int far, int miss) {
