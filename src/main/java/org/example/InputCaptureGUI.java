@@ -45,11 +45,19 @@ public class InputCaptureGUI extends JFrame {
 
         capturedArea = new JTextArea();
         capturedArea.setEditable(false);
+        capturedArea.setName("capturedArea");
 
         startButton = new JButton("開始捕捉");
+        startButton.setName("startButton");
+
         captureButton = new JButton("捕捉點擊");
+        captureButton.setName("captureButton");
+
         resetButton = new JButton("重置");
+        resetButton.setName("resetButton");
+
         judgeButton = new JButton("判定結果");
+        judgeButton.setName("judgeButton");
 
         captureButton.setEnabled(false);
         judgeButton.setEnabled(false);
