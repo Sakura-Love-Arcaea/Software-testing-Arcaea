@@ -14,6 +14,9 @@ import org.assertj.swing.core.Robot;
 import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.*;
 
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
 public class InputCaptureGUITest {
@@ -114,6 +117,75 @@ public class InputCaptureGUITest {
         window.button("startButton").click();
         window.button("captureButton").click();
         window.button("resetButton").click();
+        window.button("judgeButton").click();
+        assertTrue(window.textBox("capturedArea").text().contains("捕捉結束！點擊「判定結果」查看成績"));
+    }
+
+    @Test
+    public void testXkeypress() throws AWTException {
+        java.awt.Robot awtRobot = new java.awt.Robot(); // 指定使用 AWT 的 Robot
+        awtRobot.setAutoDelay(100);
+
+        // 模擬按下 X 鍵
+        awtRobot.keyPress(KeyEvent.VK_X);
+        awtRobot.keyRelease(KeyEvent.VK_X);
+
+        awtRobot.keyPress(KeyEvent.VK_X);
+        awtRobot.keyRelease(KeyEvent.VK_X);
+
+
+        window.button("resetButton").click();
+        window.button("judgeButton").click();
+
+        assertTrue(window.textBox("capturedArea").text().contains("捕捉結束！點擊「判定結果」查看成績"));
+    }
+
+    @Test
+    public void testXkeypress2() throws AWTException {
+        java.awt.Robot awtRobot = new java.awt.Robot(); // 指定使用 AWT 的 Robot
+        awtRobot.setAutoDelay(100);
+
+        window.button("startButton").click();
+
+        // 模擬開始後按下 X 鍵
+        awtRobot.keyPress(KeyEvent.VK_X);
+        awtRobot.keyRelease(KeyEvent.VK_X);
+
+
+        window.button("resetButton").click();
+        window.button("judgeButton").click();
+
+        assertTrue(window.textBox("capturedArea").text().contains("捕捉結束！點擊「判定結果」查看成績"));
+    }
+
+    @Test
+    public void testPressEscapeKey() throws AWTException {
+        java.awt.Robot awtRobot = new java.awt.Robot(); // 指定使用 AWT 的 Robot
+        awtRobot.setAutoDelay(100);
+
+        awtRobot.keyPress(KeyEvent.VK_ESCAPE);
+        awtRobot.keyRelease(KeyEvent.VK_ESCAPE);
+
+        window.button("startButton").click();
+        window.button("captureButton").click();
+
+        // 模擬按下 ESC 鍵來結束
+        awtRobot.keyPress(KeyEvent.VK_ESCAPE);
+        awtRobot.keyRelease(KeyEvent.VK_ESCAPE);
+
+        window.button("judgeButton").click();
+
+        assertTrue(window.textBox("capturedArea").text().contains("捕捉結束！點擊「判定結果」查看成績"));
+    }
+
+    @Test
+    public void testAutoStop() throws InterruptedException {
+        window.button("startButton").click();
+        window.button("captureButton").click();
+        window.button("captureButton").click();
+        //等待時間,使他自動結束
+        Thread.sleep(5000);
+        // 按下判斷按鈕後，文字區顯示判斷結果，這邊用一個假定字串 "判斷結果" 當例子
         window.button("judgeButton").click();
         assertTrue(window.textBox("capturedArea").text().contains("捕捉結束！點擊「判定結果」查看成績"));
     }
