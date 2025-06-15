@@ -13,13 +13,14 @@ import static org.mockito.Mockito.*;
 class JudgementTest {
 
     @Nested
-    @DisplayName("Single Judgement Test")
-    class SingleJudgementTest {
+    @DisplayName("OneNoteOneHit Test")
+    class OneNoteOneHitTest {
         private static Judgement judgement;
 
         @BeforeAll
         static void setup() {
-            judgement = new Judgement(new Chart("SingleJudgementTest", 0, 1), new double[]{}); // blank chart for setup
+            judgement = new Judgement(null, null); // blank chart for setup
+            
         }
 
         @Test
@@ -80,8 +81,8 @@ class JudgementTest {
     }
 
     @Nested
-    @DisplayName("Multi Judgement Test")
-    class MultiJudgementsTest {
+    @DisplayName("OneNoteTwoHit Test")
+    class OneNoteTwoHitTest {
         private static Chart chart;
         @BeforeAll
         static void setup() {
@@ -136,26 +137,267 @@ class JudgementTest {
                     () -> assertEquals(far, results[1], "Far count mismatch"),
                     () -> assertEquals(miss, results[2], "Miss count mismatch")
             );
-
         }
     }
 
     @Nested
-    @DisplayName("Multi Nodes Test")
-    class MultiNodesTest {
+    @DisplayName("TwoNotesOneHitOverlap Test")
+    class TwoNotesOneHitOverlapTest {
 
         @Test
-        void testMultiNodesJudgement() {
+        void secondFastMissUnderFirstLateMiss() {
+            // 1. hit first's late miss
             LowiroService lowiroService = mock(LowiroService.class);
             when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
-            when(lowiroService.getNoteCount(anyString())).thenReturn(1); // mock note count
-            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1100, 2000, 2000, 3000}); // mock notes
+            when(lowiroService.getNoteCount(anyString())).thenReturn(2); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1000 + 300 + 300}); // second's fast miss under first's late miss, locate second's +0
             Chart testChart = new Chart("Test", lowiroService);
-            double[] log = {1030, 1070, 2000, 2060, 2999};
-            Judgement judgement = new Judgement(testChart, log);
+            Judgement judgement = new Judgement(testChart, new double[]{1000 + 201}); // hit first's late miss
             int[] results = judgement.getJudgements();
             assertAll(
-                    () -> assertEquals(4, results[0], "Pure count mismatch"),
+                    () -> assertEquals(0, results[0], "Pure count mismatch"),
+                    () -> assertEquals(0, results[1], "Far count mismatch"),
+                    () -> assertEquals(2, results[2], "Miss count mismatch") // both notes missed
+            );
+        }
+
+        @Test
+        void secondFastMissUnderFirstLateFar() {
+            // 1. hit first's late far
+            // 2. hit first's late miss
+
+            // 1.
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(2); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1000 + 300 + 200}); // second's fast miss under first's late far, locate second's +0
+            Chart testChart = new Chart("Test", lowiroService);
+            Judgement judgement = new Judgement(testChart, new double[]{1000 + 51}); // hit first's late far
+            int[] resultsHitLateFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateFar[1], "Far count mismatch"), // first's late far
+                    () -> assertEquals(1, resultsHitLateFar[2], "Miss count mismatch") // first's late miss
+            );
+
+            // 2.
+            judgement = new Judgement(testChart, new double[]{1000 + 201}); // hit first's late miss
+            int[] resultsHitLateMiss = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateMiss[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitLateMiss[1], "Far count mismatch"),
+                    () -> assertEquals(2, resultsHitLateMiss[2], "Miss count mismatch") // both notes missed
+            );
+
+
+        }
+
+        @Test
+        void secondFastMissUnderFirstPure() {
+            // 1. hit first's pure
+            // 2. hit first's late far
+            // 3. hit first's late miss
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(2); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1000 + 300 + 50}); // second's fast miss under first's pure, locate second's +0
+            Chart testChart = new Chart("Test", lowiroService);
+            Judgement judgement = new Judgement(testChart, new double[]{1000}); // hit first's pure
+            // 1. hit first's pure
+            int[] resultsHitPure = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(1, resultsHitPure[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitPure[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitPure[2], "Miss count mismatch") // first's late miss
+            );
+
+            // 2. hit first's late far
+            judgement = new Judgement(testChart, new double[]{1000 + 51}); // hit first's late far
+            int[] resultsHitLateFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateFar[1], "Far count mismatch"), // first's late far
+                    () -> assertEquals(1, resultsHitLateFar[2], "Miss count mismatch") // first's late miss
+            );
+
+            // 3. hit first's late miss
+            judgement = new Judgement(testChart, new double[]{1000 + 201}); // hit first's late miss
+            int[] resultsHitLateMiss = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateMiss[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateMiss[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitLateMiss[2], "Miss count mismatch") // both notes missed
+            );
+
+
+        }
+
+        @Test
+        void secondFastMissUnderFirstFastFar() {
+            // 1. hit first's fast far
+            // 2. hit first's pure
+            // 3. hit first's late far
+            // 4. hit first's late miss
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(2); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1000 + 300 - 50}); // second's fast miss under first's fast far, locate second's +0
+            Chart testChart = new Chart("Test", lowiroService);
+
+            // 1. hit first's fast far
+            Judgement judgement = new Judgement(testChart, new double[]{1000 - 51}); // hit first's fast far
+            int[] resultsHitFastFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitFastFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitFastFar[1], "Far count mismatch"), // first's fast far
+                    () -> assertEquals(1, resultsHitFastFar[2], "Miss count mismatch") // first's late miss
+            );
+            // 2. hit first's pure
+            judgement = new Judgement(testChart, new double[]{1000}); // hit first's pure
+            int[] resultsHitPure = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(1, resultsHitPure[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitPure[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitPure[2], "Miss count mismatch") // first's late miss
+            );
+            // 3. hit first's late far
+            judgement = new Judgement(testChart, new double[]{1000 + 51}); // hit first's late far
+            int[] resultsHitLateFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateFar[1], "Far count mismatch"), // first's late far
+                    () -> assertEquals(1, resultsHitLateFar[2], "Miss count mismatch") // first's late miss
+            );
+            // 4. hit first's late miss
+            judgement = new Judgement(testChart, new double[]{1000 + 201}); // hit first's late miss
+            int[] resultsHitLateMiss = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(1, resultsHitLateMiss[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitLateMiss[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitLateMiss[2], "Miss count mismatch") // first's late miss
+            );
+        }
+
+        @Test
+        void secondFastMissUnderFirstFastMiss() {
+            // 1. hit first's fast miss
+            // 2. hit first's fast far
+            // 3. hit first's pure
+            // 4. hit first's late far
+            // 5. hit first's late miss
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(2); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{1000, 1000 + 300 - 200}); // second's fast miss under first's fast miss, locate second's +0
+            Chart testChart = new Chart("Test", lowiroService);
+            // 1. hit first's fast miss
+            Judgement judgement = new Judgement(testChart, new double[]{1000 - 201}); // hit first's fast miss
+            int[] resultsHitFastMiss = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitFastMiss[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitFastMiss[1], "Far count mismatch"), // first's fast miss
+                    () -> assertEquals(2, resultsHitFastMiss[2], "Miss count mismatch") // first's late miss
+            );
+            // 2. hit first's fast far
+            judgement = new Judgement(testChart, new double[]{1000 - 51}); // hit first's fast far
+            int[] resultsHitFastFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitFastFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitFastFar[1], "Far count mismatch"), // first's fast far
+                    () -> assertEquals(1, resultsHitFastFar[2], "Miss count mismatch") // first's late miss
+            );
+            // 3. hit first's pure
+            judgement = new Judgement(testChart, new double[]{1000}); // hit first's pure
+            int[] resultsHitPure = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(1, resultsHitPure[0], "Pure count mismatch"),
+                    () -> assertEquals(0, resultsHitPure[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitPure[2], "Miss count mismatch") // first's late miss
+            );
+            // 4. hit first's late far
+            judgement = new Judgement(testChart, new double[]{1000 + 51}); // hit first's late far
+            int[] resultsHitLateFar = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateFar[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateFar[1], "Far count mismatch"), // first's late far
+                    () -> assertEquals(1, resultsHitLateFar[2], "Miss count mismatch") // first's late miss
+            );
+            // 5. hit first's late miss
+            judgement = new Judgement(testChart, new double[]{1000 + 201}); // hit first's late miss
+            int[] resultsHitLateMiss = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, resultsHitLateMiss[0], "Pure count mismatch"),
+                    () -> assertEquals(1, resultsHitLateMiss[1], "Far count mismatch"),
+                    () -> assertEquals(1, resultsHitLateMiss[2], "Miss count mismatch") // first's late miss
+            );
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Density Test")
+    class DensityTest {
+        private static Chart chart;
+
+        @BeforeAll
+        static void setup() {
+            LowiroService lowiroService = mock(LowiroService.class);
+            when(lowiroService.getConstant(anyString())).thenReturn(1.0); // mock constant
+            when(lowiroService.getNoteCount(anyString())).thenReturn(10); // mock note count
+            when(lowiroService.getNotes(anyString())).thenReturn(new double[]{
+                    1000, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1090
+            }); // mock notes
+            Chart testChart = new Chart("DenseNotes", lowiroService);
+            chart = testChart;
+        }
+
+        @Test
+        void allpure() {
+            Judgement judgement = new Judgement(chart, new double[]{
+                    1000, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1090
+            });
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(10, results[0], "Pure count mismatch"),
+                    () -> assertEquals(0, results[1], "Far count mismatch"),
+                    () -> assertEquals(0, results[2], "Miss count mismatch")
+            );
+        }
+
+        @Test
+        void allFar() {
+            Judgement judgement = new Judgement(chart, new double[]{
+                    1200, 1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290
+            });
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, results[0], "Pure count mismatch"),
+                    () -> assertEquals(10, results[1], "Far count mismatch"),
+                    () -> assertEquals(0, results[2], "Miss count mismatch")
+            );
+        }
+        
+        @Test
+        void missingHead() {
+            Judgement judgement = new Judgement(chart, new double[]{
+                    1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1090
+            });
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(9, results[0], "Pure count mismatch"),
+                    () -> assertEquals(0, results[1], "Far count mismatch"),
+                    () -> assertEquals(1, results[2], "Miss count mismatch")
+            );
+        }
+
+        @Test
+        void fastFarringHead() {
+            Judgement judgement = new Judgement(chart, new double[]{
+                    1000 - 51, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1090
+            });
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(9, results[0], "Pure count mismatch"),
                     () -> assertEquals(1, results[1], "Far count mismatch"),
                     () -> assertEquals(0, results[2], "Miss count mismatch")
             );
