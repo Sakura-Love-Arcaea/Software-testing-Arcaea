@@ -97,37 +97,37 @@ class JudgementTest {
         @ParameterizedTest
         @CsvSource({
                 // Ignore heading
-                "-301, -550, 0, 0, 1",    // Ignore + Ignore
-                "-301, -350, 0, 0, 1",    // Ignore + FastMiss
+                "-302, -301, 0, 0, 1",    // Ignore + Ignore
+                "-301, -201, 0, 0, 1",    // Ignore + FastMiss
                 "-301, -150, 0, 1, 0",    // Ignore + Far(fast)
                 "-301, 0,    1, 0, 0",    // Ignore + Pure
                 "-301, 150,  0, 1, 0",    // Ignore + Far(slow)
-                "-301, 350,  0, 0, 1",    // Ignore + LateMiss
+                "-301, 201,  0, 0, 1",    // Ignore + LateMiss
 
                 // FastMiss heading
-                "-201, -320, 0, 0, 1",    // FastMiss + FastMiss
+                "-202, -201, 0, 0, 1",    // FastMiss + FastMiss
                 "-201, -150, 0, 0, 1",    // FastMiss + Far(fast)
                 "-201, 0,    0, 0, 1",    // FastMiss + Pure
                 "-201, 150,  0, 0, 1",    // FastMiss + Far(slow)
-                "-201, 350,  0, 0, 1",    // FastMiss + LateMiss
+                "-201, 201,  0, 0, 1",    // FastMiss + LateMiss
 
                 // Far(fast) heading
-                "-150, -120, 0, 1, 0",    // Far(fast) + Far(fast)
+                "-151, -150, 0, 1, 0",    // Far(fast) + Far(fast)
                 "-150, 0,    0, 1, 0",    // Far(fast) + Pure
                 "-150, 150,  0, 1, 0",    // Far(fast) + Far(slow)
-                "-150, 350,  0, 1, 0",    // Far(fast) + LateMiss
+                "-150, 201,  0, 1, 0",    // Far(fast) + LateMiss
 
                 // Pure heading
-                "0, 30,  1, 0, 0",        // Pure + Pure
+                "-1, 0,  1, 0, 0",        // Pure + Pure
                 "0, 150, 1, 0, 0",        // Pure + Far(slow)
-                "0, 350, 1, 0, 0",        // Pure + LateMiss
+                "0, 201, 1, 0, 0",        // Pure + LateMiss
 
                 // Far(slow) heading
-                "150, 180, 0, 1, 0",     // Far(slow) + Far(slow)
-                "150, 350, 0, 1, 0",     // Far(slow) + LateMiss
+                "149, 150, 0, 1, 0",     // Far(slow) + Far(slow)
+                "150, 201, 0, 1, 0",     // Far(slow) + LateMiss
 
                 // LateMiss heading
-                "201, 400, 0, 0, 1"      // LateMiss + LateMiss
+                "201, 202, 0, 0, 1"      // LateMiss + LateMiss
         })
         void testDoubleHit(double hit1, double hit2, int pure, int far, int miss) {
             Judgement judgement = new Judgement(chart, new double[]{1000+hit1, 1000+hit2});
@@ -365,9 +365,21 @@ class JudgementTest {
         }
 
         @Test
-        void allFar() {
+        void allLateFar() {
             Judgement judgement = new Judgement(chart, new double[]{
                     1200, 1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290
+            });
+            int[] results = judgement.getJudgements();
+            assertAll(
+                    () -> assertEquals(0, results[0], "Pure count mismatch"),
+                    () -> assertEquals(10, results[1], "Far count mismatch"),
+                    () -> assertEquals(0, results[2], "Miss count mismatch")
+            );
+        }
+
+        void allFastFar() {
+            Judgement judgement = new Judgement(chart, new double[]{
+                    800, 810, 820, 830, 840, 850, 860, 870, 880, 890
             });
             int[] results = judgement.getJudgements();
             assertAll(
